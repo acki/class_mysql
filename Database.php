@@ -20,10 +20,10 @@
 		private 	$stmt;
 		
 		public function __construct($host, $user, $pass, $db) {
-			if($this->mysqli = new mysqli($host, $user, $pass, $db)) {
+			if($this->mysqli = @new mysqli($host, $user, $pass, $db) && isset($this->mysqli)) {
 				return $this->mysqli;
 			} else {
-				$this->throwMysqliError('connect', $this->mysqli->error);
+				$this->throwMysqliError('connect', mysqli_connect_error());
 			}
 		} //function construct
 		
