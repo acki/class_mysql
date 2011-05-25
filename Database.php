@@ -4,7 +4,7 @@
 	 * Database Class
 	 * 
 	 * This is a very usable database class which uses mysqli.
-	 * Tried to abstract all usable usecases.
+	 * Tried to abstract all usable usecases. Test.
 	 *
 	 * @author Christoph S. Ackermann, info@acki.be
 	 */
