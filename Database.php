@@ -4,7 +4,7 @@
 	 * Database Class
 	 * 
 	 * This is a very usable database class which uses mysqli.
-	 * Tried to abstract all usable usecases. Test.
+	 * Tried to abstract all usable usecases.
 	 *
 	 * @author Christoph S. Ackermann, info@acki.be
 	 */
@@ -20,8 +20,11 @@
 		private 	$stmt;
 		
 		public function __construct($host, $user, $pass, $db) {
-			$this->mysqli = new mysqli($host, $user, $pass, $db);
-			return $this->mysqli;
+			if($this->mysqli = new mysqli($host, $user, $pass, $db)) {
+				return $this->mysqli;
+			} else {
+				$this->throwMysqliError('connect', $this->mysqli->error);
+			}
 		} //function construct
 		
 		/**
