@@ -1,4 +1,4 @@
-<?
+<?php
 
 	/**
 	 * Database Class
@@ -20,7 +20,8 @@
 		private 	$stmt;
 		
 		public function __construct($host, $user, $pass, $db) {
-			if($this->mysqli = @new mysqli($host, $user, $pass, $db) && isset($this->mysqli)) {
+			$this->mysqli = @new mysqli($host, $user, $pass, $db);
+                        if(isset($this->mysqli) && !mysqli_connect_errno()) {
 				return $this->mysqli;
 			} else {
 				$this->throwMysqliError('connect', mysqli_connect_error());
@@ -53,6 +54,30 @@
 			
 		}
 		
+                /**
+                 * Insert an entry in the database
+                 * @param string $table
+                 * @param array $values (Format: array(field=>value))
+                */
+                
+                public function insert($table, $values) {
+                	$this->table			= $table;
+                	$this->whereString		= false;
+                	$this->bindValues		= false;
+                	
+                	if(!is_array($values)) {
+                		die('insert takes an array as second parameter');
+                	}
+                	
+                	$this->createDataString($values);
+                	
+                	$this->query = 'INSERT INTO  ' . $this->table . ' SET ' . $this->dataString;
+                			
+                	$this->prepareAndExecuteQuery();
+                	//var_dump($this->dataValues);
+                	
+                }
+
 		/**
 		 * Select database entries
 		 * @param string $table
@@ -213,7 +238,7 @@
 			$this->bindValues = '';
 				
 			if($type === 'update') {
-			
+		        $this->dataString = '';	
 				foreach($data as $key=>$val) {
 					$this->dataString .= $key . ' = ?, ';
 					$this->bindValues[] = $val;
@@ -221,7 +246,6 @@
 				$this->dataString = substr($this->dataString, 0, strlen($this->dataString)-2);
 			
 			}
-			
 		}
 		
 		/**
