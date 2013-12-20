@@ -13,7 +13,8 @@
 	
 		public 		$mysqli;
 		protected 	$toSelect;
-		protected 	$table;
+		protected       $orderString;
+                protected 	$table;
 		protected 	$whereString;
 		protected 	$bindValues 		= array();
 		private 	$query;
@@ -83,9 +84,11 @@
 		 * @param string $table
 		 * @param array $whereClauses (Format: array(field=>value) or array(field=>array(value, operator)))
 		 * @param string|array $toSelect (Format: string(value) or array(value, value))
+                 * @param string $orderBy (column name)
+                 * @param bool $asc
 		*/
 	
-		public function select($table, $whereClauses=false, $toSelect='*') {
+		public function select($table, $whereClauses=false, $toSelect='*', $orderBy=false, $asc=true) {
 			$this->toSelect 		= $toSelect;
 			$this->table 			= $table;
 			$this->bindValues		= false;
@@ -102,8 +105,13 @@
 				$this->createWhereString($whereClauses);
 			} //if whereclauses
 			
+                        //if $orderBy on $asc exist, create order string
+                        if(isset($orderBy) && is_string($orderBy) && $orderBy != '') {
+                                $this->createOrderString($orderBy, $asc);
+                        } //if orderBy
+
 			//creates a query with our known data
-			$this->query			= 'SELECT ' . $this->toSelect . ' FROM ' . $this->table . $this->whereString;
+			$this->query			= 'SELECT ' . $this->toSelect . ' FROM ' . $this->table . $this->whereString . $this->orderString;
 			
 			//prepare, bind and execute the statement
 			$this->prepareAndExecuteQuery();
@@ -173,7 +181,18 @@
 			return false;
 
 		}//function bindparams
-		
+	        
+                /**
+                 * Creates the sorting string
+                 * @param String $orderBy
+                 * @param bool $asc
+                */
+                
+                private function createOrderString($orderBy, $asc) {
+                        $this->orderString      = ' ORDER BY ' . $orderBy . ' ';
+                        ($asc)?$this->orderString .= 'ASC ':$this->orderString .= 'DESC';
+                }
+
 		/**
 		 * Creates the where string with an array of data
 		 * @param array $where (Format: array(field=>value) or array(field=>array(value, operator)))
